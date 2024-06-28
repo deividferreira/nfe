@@ -1583,7 +1583,7 @@ public class MDFeRecepcaoStub extends org.apache.axis2.client.Stub {
     /* methods to provide back word compatibility */
 
     /**
-     * get the default envelope
+     * get the default envelope 
      */
     @SuppressWarnings("unused")
     private org.apache.axiom.soap.SOAPEnvelope toEnvelope(final org.apache.axiom.soap.SOAPFactory factory) {
