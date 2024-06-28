@@ -18,41 +18,54 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.util.Iterator;
 
+/**
+ * Serviços Assincronos serão desativados na data de 30 de Junho de 2024 conforme versa a NT 2024.001.
+ * @author ediva
+ */
+@Deprecated
 class WSRecepcaoLote implements DFLog {
-    
+
     private static final String MDFE_ELEMENTO = "MDFe";
     private final MDFeConfig config;
-    
+
     WSRecepcaoLote(final MDFeConfig config) {
         this.config = config;
     }
-    
+
+    /**
+     * Serviços Assincronos serão desativados na data de 30 de Junho de 2024 conforme versa a NT 2024.001.
+     *
+     * @param mdfeRecepcaoLote
+     * @return
+     * @throws Exception
+     */
+    @Deprecated
     public MDFEnvioLoteRetornoDados envioRecepcao(MDFEnvioLote mdfeRecepcaoLote) throws Exception {
         //assina o lote
         final String documentoAssinado = new DFAssinaturaDigital(this.config).assinarDocumento(mdfeRecepcaoLote.toString(), "infMDFe");
         final MDFEnvioLote loteAssinado = this.config.getPersister().read(MDFEnvioLote.class, documentoAssinado);
-        
+
         //comunica o lote
         final MDFEnvioLoteRetorno retorno = comunicaLote(documentoAssinado);
         return new MDFEnvioLoteRetornoDados(retorno, loteAssinado);
     }
-    
+
     private MDFEnvioLoteRetorno comunicaLote(final String loteAssinadoXml) throws Exception {
         //devido a limitacao padrao de 5000 da jdk
         //veja em https://docs.oracle.com/javase/7/docs/api/javax/xml/XMLConstants.html#FEATURE_SECURE_PROCESSING
         System.setProperty("jdk.xml.maxOccurLimit", "10000");
         //valida o lote assinado, para verificar se o xsd foi satisfeito, antes de comunicar com a sefaz
         DFXMLValidador.validaLoteMDFe(loteAssinadoXml);
-        
+
         //envia o lote para a sefaz
         final OMElement omElement = this.mdfeToOMElement(loteAssinadoXml);
-    
+
         final MDFeRecepcaoStub.MdfeDadosMsg dados = new MDFeRecepcaoStub.MdfeDadosMsg();
         dados.setExtraElement(omElement);
-    
+
         final MDFeRecepcaoStub.MdfeCabecMsgE cabecalhoSOAP = this.getCabecalhoSOAP();
         this.getLogger().debug(omElement.toString());
-        
+
         final MDFAutorizador3 autorizador = MDFAutorizador3.valueOfCodigoUF(this.config.getCUF());
         final String endpoint = autorizador.getMDFeRecepcao(this.config.getAmbiente());
         if (endpoint == null) {
@@ -63,7 +76,7 @@ class WSRecepcaoLote implements DFLog {
         this.getLogger().debug(retorno.toString());
         return retorno;
     }
-    
+
     private MDFeRecepcaoStub.MdfeCabecMsgE getCabecalhoSOAP() {
         final MDFeRecepcaoStub.MdfeCabecMsg cabecalho = new MDFeRecepcaoStub.MdfeCabecMsg();
         cabecalho.setCUF(this.config.getCUF().getCodigoIbge());
@@ -72,7 +85,7 @@ class WSRecepcaoLote implements DFLog {
         cabecalhoSOAP.setMdfeCabecMsg(cabecalho);
         return cabecalhoSOAP;
     }
-    
+
     private OMElement mdfeToOMElement(final String documento) throws XMLStreamException {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
         factory.setProperty(XMLInputFactory.IS_COALESCING, false);

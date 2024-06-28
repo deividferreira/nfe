@@ -28,6 +28,13 @@ public enum MDFAutorizador3 {
         }
 
         @Override
+        public String getMDFeRecepcaoSinc(DFAmbiente ambiente) {
+            return DFAmbiente.HOMOLOGACAO.equals(ambiente)
+                    ? "https://mdfe-homologacao.svrs.rs.gov.br/ws/MDFeRecepcaoSinc/MDFeRecepcaoSinc.asmx"
+                    : "https://mdfe.svrs.rs.gov.br/ws/MDFeRecepcaoSinc/MDFeRecepcaoSinc.asmx";
+        }
+
+        @Override
         public String getMDFeRetornoRecepcao(DFAmbiente ambiente) {
             return DFAmbiente.HOMOLOGACAO.equals(ambiente)
                     ? "https://mdfe-homologacao.svrs.rs.gov.br/ws/MDFeRetRecepcao/MDFeRetRecepcao.asmx"
@@ -69,6 +76,8 @@ public enum MDFAutorizador3 {
     };
 
     public abstract String getMDFeRecepcao(final DFAmbiente ambiente);
+
+    public abstract String getMDFeRecepcaoSinc(final DFAmbiente ambiente);
 
     public abstract String getMDFeRetornoRecepcao(final DFAmbiente ambiente);
 
